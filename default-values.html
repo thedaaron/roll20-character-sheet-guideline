@@ -1,0 +1,323 @@
+<div class="dh_sheet">
+    <!-- Default values only for root variables, mostly not working, better use class dh_hidden -->
+    <input type="hidden" name="attr_emptyText" value="" />
+    <input type="hidden" name="attr_settedText" value="settedText" />
+    <input type="hidden" name="attr_emptyNumber" value="" />
+    <input type="hidden" name="attr_settedNumber" value="6" />
+    <input type="hidden" name="attr_falseBoolean" value="0" />
+    <input type="hidden" name="attr_trueBoolean" value="1" />
+    <input type="hidden" name="attr_enumNotSelected" value="" />
+    <input type="hidden" name="attr_enumSelected" value="Člověk" />
+    <input type="hidden" name="attr_radioNotSelected" value="" />
+    <input type="hidden" name="attr_radioSelected" value="5" />
+    <textarea name="attr_emptyTextarea" class="dh_hidden"></textarea>
+    <textarea name="attr_settedTextarea" class="dh_hidden">settedText</textarea>
+
+    
+    <a href="https://wiki.roll20.net/Building_Character_Sheets#Default_Values">Documentation Here!</a>
+    <h1 class="dh_h1">Rules</h1>
+    <p>Each hidden input need to have specified default <b>value</b> attribute</p>
+    <p>Each worker need to have getAttrs to get real value from attribute</p>
+
+    <hr>
+    <h1 class="dh_h1">Text Inputs</h1>
+    <div class="dh_text_input">
+        <div class="dh_label">Empty</div>
+        <p><b>default</b> is <code>""</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <p><b>delete</b> <code>realValue === ""</code> and <code>new === undefined</code></p>
+        <div class="dh_input">
+            <input type="text" name="attr_emptyText" value="" />
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_emptyText"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_emptyTextWorker"></span>
+        </div>
+    </div>
+    <div class="dh_text_input">
+        <div class="dh_label">With Default</div>
+        <p><b>default</b> is <code>"settedText"</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <p><b>delete</b> <code>realValue === "settedText"</code> and <code>new === undefined</code></p>
+        <div class="dh_input">
+            <input type="text" name="attr_settedText" value="settedText" />
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_settedText"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_settedTextWorker"></span>
+        </div>
+    </div>
+
+    <hr>
+    <h1 class="dh_h1">Number Inputs</h1>
+    <div class="dh_number_input">
+        <div class="dh_label">Empty</div>
+        <p><b>default</b> is <code>""</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <p><b>delete</b> <code>realValue === ""</code> and <code>new === undefined</code></p>
+        <div class="dh_input">
+            <input type="number" name="attr_emptyNumber" value="" />
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_emptyNumber"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_emptyNumberWorker"></span>
+        </div>
+    </div>
+    <div class="dh_number_input">
+        <div class="dh_label">With Default</div>
+        <p><b>default</b> is <code>"6"</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <p><b>delete</b> <code>realValue === "6"</code> and <code>new === undefined</code></p>
+        <div class="dh_input">
+            <input type="number" name="attr_settedNumber" value="6" />
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_settedNumber"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_settedNumberWorker"></span>
+        </div>
+    </div>
+    
+    <hr>
+    <h1 class="dh_h1">Checkboxes</h1>
+    <div class="dh_checkbox">
+        <div class="dh_label">Default False</div>
+        <p><code>true === "1"</code> and <code>false === "0"</code>
+        <p><b>default</b> is <code>"0"</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <div class="dh_input">
+            <input type="checkbox" name="attr_falseBoolean" value="1" />
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_falseBoolean"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_falseBooleanWorker"></span>
+        </div>
+    </div>
+    <div class="dh_checkbox">
+        <div class="dh_label">Default True</div>
+        <p><code>true === "1"</code> and <code>false === "0"</code>
+        <p><b>default</b> is <code>"1"</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+            <input type="checkbox" name="attr_trueBoolean" value="1" checked/>
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_trueBoolean"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_trueBooleanWorker"></span>
+        </div>
+    </div>
+
+    <hr>
+    <h1 class="dh_h1">Selects</h1>
+    <div class="dh_select">
+        <div class="dh_label">Empty</div>
+        <p><b>default</b> is <code>""</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <p><b>delete</b> <code>realValue === ""</code> and <code>new === undefined</code></p>
+        <div class="dh_input">
+            <select name="attr_enumNotSelected" value="">
+                <option value=""></option>
+                <option value="Člověk">Člověk</option>
+                <option value="Gnóm">Gnóm</option>
+                <option value="Obr">Obr</option>
+                <option value="Trpaslík">Trpaslík</option>
+                <option value="Půlčík">Půlčík</option>
+                <option value="Elf">Elf</option>
+              </select>
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_enumNotSelected"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_enumNotSelectedWorker"></span>
+        </div>
+    </div>
+    <div class="dh_select">
+        <div class="dh_label">With Default</div>
+        <p><b>default</b> is <code>""</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <p><b>delete</b> <code>realValue === ""</code> and <code>new === undefined</code></p>
+        <div class="dh_input">
+            <select name="attr_enumSelected" value="">
+                <option value="">Nevybráno</option>
+                <option value="Člověk" selected="selected">Člověk</option>
+                <option value="Gnóm">Gnóm</option>
+                <option value="Obr">Obr</option>
+                <option value="Trpaslík">Trpaslík</option>
+                <option value="Půlčík">Půlčík</option>
+                <option value="Elf">Elf</option>
+              </select>
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_enumSelected"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_enumSelectedWorker"></span>
+        </div>
+    </div>
+
+    <hr>
+    <h1 class="dh_h1">Radios</h1>
+    <div class="dh_radio">
+        <div class="dh_label">Not Selected Radio</div>
+        <p><b>default</b> is <code>""</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <div class="dh_input">
+            <span>Základ: </span><input type="radio" value="0" name="attr_radioNotSelected" >
+            <span>Nevýhoda: </span><input type="radio" value="-5" name="attr_radioNotSelected" >
+            <span>Výhoda: </span><input type="radio" value="5" name="attr_radioNotSelected" >
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_radioNotSelected"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_radioNotSelectedWorker"></span>
+        </div>
+    </div>
+    <div class="dh_radio">
+        <div class="dh_label">Selected Radio</div>
+        <p><b>default</b> is <code>"5"</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <div class="dh_input">
+            <span>Základ: </span><input type="radio" value="0" name="attr_radioSelected" >
+            <span>Nevýhoda: </span><input type="radio" value="-5" name="attr_radioSelected" >
+            <span>Výhoda: </span><input type="radio" value="5" name="attr_radioSelected" checked>
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_radioSelected"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_radioSelectedWorker"></span>
+        </div>
+    </div>
+
+    <hr>
+    <h1 class="dh_h1">Textareas</h1>
+    <div class="dh_textarea">
+        <div class="dh_label">Empty</div>
+        <p><b>default</b> is <code>""</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <p><b>delete</b> <code>realValue === ""</code> and <code>new === undefined</code></p>
+        <div class="dh_input">
+            <textarea rows="2" name="attr_emptyTextarea"></textarea>
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_emptyTextarea"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_emptyTextareaWorker"></span>
+        </div>
+    </div>
+    <div class="dh_textarea">
+        <div class="dh_label">With Default</div>
+        <p><b>default</b> is <code>"settedText"</code></p>
+        <p><b>first change</b> values <code>new === previous</code></p>
+        <p><b>delete</b> <code>realValue === "settedText"</code> and <code>new === undefined</code></p>
+        <div class="dh_input">
+            <textarea rows="2" name="attr_settedTextarea">settedText</textarea>
+        </div>
+        <div class="dh_value">
+            <span>Display Value: </span>
+            <span name="attr_settedTextarea"></span>
+        </div>
+        <div class="dh_value">
+            <span>Eventinfo Value: </span>
+            <span name="attr_settedTextareaWorker"></span>
+        </div>
+    </div>
+
+</div>
+
+<script type="text/worker">
+
+    const attributes = {
+        emptyText: "",
+        settedText: "settedText",
+        emptyNumber: "",
+        settedNumber: "6",
+        falseBoolean: "0",
+        trueBoolean: "1",
+        enumNotSelected: "",
+        enumSelected: "Člověk",
+        radioNotSelected: "",
+        radioSelected: "5",
+        emptyTextarea: "",
+        settedTextarea: "settedText",
+    };
+
+    on("sheet:opened", (eventinfo) => {
+        console.log('sheet opened', eventinfo);
+        
+        // Load sheet attributes
+        getAttrs(Object.keys(attributes), (values) => {
+            console.log('default values', { values });
+            
+            // Clone Default Attributes and write them
+            const data = JSON.parse(JSON.stringify(attributes));
+            setAttrs(
+                data,
+                { silent: false },
+                () => {
+                    console.log('setAttrs', data);
+                }
+            );
+        })
+    });
+
+    // Create event listeneres on default attributes changes
+    Object.keys(attributes).forEach( (attribute) => {
+        on(`change:${attribute}`, (eventinfo) => {
+            console.log(`change:${attribute}`, { 'new': eventinfo.newValue, 'previous': eventinfo.previousValue, ...eventinfo });
+            
+            // Load Real Value
+            getAttrs([`${attribute}`], (values) => {
+                console.log('getAttrs', { [attribute]: values[attribute] });
+                
+                // Write EventInfo newValue to diferrent attributen to display
+                const data = {
+                    [`${attribute}Worker`]: `${eventinfo.newValue}`
+                };
+                setAttrs(
+                    data,
+                    { silent: false },
+                    () => {
+                        console.log('setAttrs', data);
+                    }
+                );
+            });
+        });
+    });
+
+</script>

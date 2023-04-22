@@ -1,0 +1,50 @@
+.dh_sheet {
+    display: block;
+    margin: 0 auto;
+    font-size: 1.2em;
+}
+
+.dh_h1 {
+    font-size: 1.1em;
+    letter-spacing: 0.6px;
+    color: red;
+    font-weight: 600;
+    padding-left: 0px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: none;
+    border: none;
+}
+
+.dh_label {
+    font-size: 1em;
+    letter-spacing: 0.6px;
+    color: blue;
+    font-weight: 600;
+    padding-left: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: none;
+    border: none;
+}
+
+.dh_input {
+    display: block;
+    padding: 2px;
+}
+
+.dh_value {
+    display: block;
+    font-weight: 500;
+    padding: 2px;
+}
+
+.dh_value span:first-child {
+    font-weight: 700;
+}
+
+.dh_hidden {
+  display: none !important;
+}
