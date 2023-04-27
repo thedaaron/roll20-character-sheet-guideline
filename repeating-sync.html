@@ -1,0 +1,111 @@
+<div class="dh_sheet">
+    <!-- Default values only for root variables, mostly not working, better use class dh_hidden -->
+    <input type="hidden" name="attr_totalCount" value="0" />
+
+    
+    <a href="https://wiki.roll20.net/Building_Character_Sheets#Default_Values">Documentation Here!</a>
+    <h1 class="dh_h1">Rules</h1>
+    <p>Each hidden input need to have specified default <b>value</b> attribute</p>
+    <p>Each worker need to have getAttrs to get real value from attribute</p>
+
+    <h1>Count</h1>
+    <span name="attr_totalCount"></span>
+
+    <hr>
+    <h1 class="dh_h1">Repeating First</h1>
+    <fieldset class="repeating_first">
+        <input type="text" name="attr_count" value="0">
+        <input type="text" name="attr_name" value="">
+    </fieldset>
+
+    <hr>
+    <h1 class="dh_h1">Repeating Second</h1>
+    <fieldset class="repeating_second">
+        <input type="text" name="attr_count" value="0">
+        <input type="text" name="attr_name" value="">
+    </fieldset>
+
+
+
+</div>
+
+<script type="text/worker">
+
+    const attributes = {
+        totalCount: "0"
+    };
+
+    on("sheet:opened", (eventinfo) => {
+        console.log('sheet opened', eventinfo);
+        
+        // Load sheet attributes
+        getAttrs(Object.keys(attributes), (values) => {
+            console.log('default values', { values });
+            
+            // Clone Default Attributes and write them
+            const data = JSON.parse(JSON.stringify(attributes));
+            setAttrs(
+                data,
+                { silent: false },
+                () => {
+                    console.log('setAttrs', data);
+                }
+            );
+        })
+    });
+
+    // Create event listeneres on default attributes changes
+    Object.keys(attributes).forEach( (attribute) => {
+        on(`change:${attribute}`, (eventinfo) => {
+            console.log(`change:${attribute}`, { 'new': eventinfo.newValue, 'previous': eventinfo.previousValue, ...eventinfo });
+            
+            // Load Real Value
+            getAttrs([`${attribute}`], (values) => {
+                console.log('getAttrs', { [attribute]: values[attribute] });
+                
+                // Write EventInfo newValue to diferrent attributen to display
+                const data = {
+                    [`${attribute}Worker`]: `${eventinfo.newValue}`
+                };
+                setAttrs(
+                    data,
+                    { silent: false },
+                    () => {
+                        console.log('setAttrs', data);
+                    }
+                );
+            });
+        });
+    });
+
+    on('change:repeating_first', (eventinfo) => {
+        console.log('change:repeating_first', eventinfo);
+        getSectionIDs('second', (idarray) => {
+           console.log(idarray);
+           const ids = [];
+           idarray.forEach( id => {
+               ids.push(`repeating_first_${id}_count`);
+               ids.push(`repeating_first_${id}_name`);
+           });
+           getAttrs(ids, values => {
+               console.log({values});
+           })
+        });
+    });
+
+    on('change:repeating_second', (eventinfo) => {
+        console.log('change:repeating_second', eventinfo);
+        getSectionIDs('first', (idarray) => {
+           console.log(idarray);
+           const ids = [];
+           idarray.forEach( id => {
+               ids.push(`repeating_second_${id}_count`);
+               ids.push(`repeating_second_${id}_name`);
+           });
+           getAttrs(ids, values => {
+               console.log({values});
+           })
+        });
+    });
+
+</script>
