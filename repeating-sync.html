@@ -13,14 +13,22 @@
 
     <hr>
     <h1 class="dh_h1">Repeating First</h1>
-    <fieldset class="repeating_first">
-        <input type="text" name="attr_count" value="0">
-        <input type="text" name="attr_name" value="">
-    </fieldset>
+    <table>
+        <tr>
+            <td>name</td>
+            <td>count</td>
+        </tr>
+        <fieldset class="repeating_first">
+            <span name="attr_syncId">
+            <input type="text" name="attr_name" value="">
+            <input type="text" name="attr_count" value="0">
+        </fieldset>
+    </table>
 
     <hr>
     <h1 class="dh_h1">Repeating Second</h1>
     <fieldset class="repeating_second">
+        <span name="attr_syncId">
         <input type="text" name="attr_count" value="0">
         <input type="text" name="attr_name" value="">
     </fieldset>
@@ -31,10 +39,53 @@
 
 <script type="text/worker">
 
+    const parseEvent = (eventInfo) => {
+        const arr: any = eventInfo.sourceAttribute.split('_');
+        return {
+            id: arr[2],
+            sectionName: `${String(arr[0])}_${String(arr[1])}`,
+            changedAttribute: arr[3],
+            newValue: eventInfo.newValue,
+            previousValue: eventInfo.previousValue,
+            removedInfo: eventInfo.removedInfo
+        };
+    };
+
     const attributes = {
         totalCount: "0"
     };
-
+    
+    const repeatingSections = {
+        first: {
+            name: 'repeating_first',
+            attrs: {
+                syncId: '',
+                name: '',
+                count: 0
+            },
+            getValues: (id, values) => ({
+                syncId: values[`${repeatingSections.first.name}_${id}_syncId`],
+                name: values[`${repeatingSections.first.name}_${id}_name`],
+                count: values[`${repeatingSections.first.name}_${id}_count`],
+            }),
+            getAttrs: (id) => Object.keys(repeatingSections.first.attrs).map( key => `${repeatingSections.first.name}_${id}_${key}`)
+        },
+        second: {
+            name: 'repeating_first',
+            attrs: {
+                syncId: '',
+                name: '',
+                count: 0
+            },
+            getValues: (id, values) => ({
+                syncId: values[`${repeatingSections.second.name}_${id}_syncId`],
+                name: values[`${repeatingSections.second.name}_${id}_name`],
+                count: values[`${repeatingSections.second.name}_${id}_count`],
+            }),
+            getAttrs: (id) => Object.keys(repeatingSections.second.attrs).map( key => `${repeatingSections.second.name}_${id}_${key}`)
+        }
+    }
+    
     on("sheet:opened", (eventinfo) => {
         console.log('sheet opened', eventinfo);
         
@@ -53,7 +104,7 @@
             );
         })
     });
-
+    
     // Create event listeneres on default attributes changes
     Object.keys(attributes).forEach( (attribute) => {
         on(`change:${attribute}`, (eventinfo) => {
@@ -77,22 +128,29 @@
             });
         });
     });
-
+    
     on('change:repeating_first', (eventinfo) => {
         console.log('change:repeating_first', eventinfo);
+        const { id } = parseEvent(eventinfo);
+        getAttrs(repeatingSections.first.getAttrs(id), (values) => {
+            const value = repeatingSections.first.getValues(id, values);
+            console.log(value.syncId);
+        })
         getSectionIDs('second', (idarray) => {
            console.log(idarray);
            const ids = [];
            idarray.forEach( id => {
                ids.push(`repeating_first_${id}_count`);
                ids.push(`repeating_first_${id}_name`);
+               ids.push(`repeating_first_${id}_syncId`);
+               ids.push(`repeating_first_${id}_id`);
            });
            getAttrs(ids, values => {
                console.log({values});
            })
         });
     });
-
+    
     on('change:repeating_second', (eventinfo) => {
         console.log('change:repeating_second', eventinfo);
         getSectionIDs('first', (idarray) => {
@@ -101,6 +159,8 @@
            idarray.forEach( id => {
                ids.push(`repeating_second_${id}_count`);
                ids.push(`repeating_second_${id}_name`);
+               ids.push(`repeating_second_${id}_syncId`);
+               ids.push(`repeating_second_${id}_id`);
            });
            getAttrs(ids, values => {
                console.log({values});
