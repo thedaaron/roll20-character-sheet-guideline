@@ -15,22 +15,32 @@
     <h1 class="dh_h1">Repeating First</h1>
     <table>
         <tr>
-            <td>name</td>
-            <td>count</td>
+            <td width="30%">syncId</td>
+            <td width="30%">name</td>
+            <td width="30%">count</td>
         </tr>
-        <fieldset class="repeating_first">
-            <span name="attr_syncId">
-            <input type="text" name="attr_name" value="">
-            <input type="text" name="attr_count" value="0">
-        </fieldset>
     </table>
+    <fieldset class="repeating_first">
+        <!-- <input type="hidden" name="attr_syncId" value="" /> -->
+        <span name="attr_syncId" style="min-width:30%; display: flex">
+        <input type="text" name="attr_name" value="" style="min-width:30%; display: flex">
+        <input type="number" name="attr_count" min="0" max="10" value="" style="min-width:30%; display: flex">
+    </fieldset>
 
     <hr>
     <h1 class="dh_h1">Repeating Second</h1>
+    <table>
+        <tr>
+            <td width="30%">syncId</td>
+            <td width="30%">name</td>
+            <td width="30%">count</td>
+        </tr>
+    </table>
     <fieldset class="repeating_second">
-        <span name="attr_syncId">
-        <input type="text" name="attr_count" value="0">
-        <input type="text" name="attr_name" value="">
+        <!-- <input type="hidden" name="attr_syncId" value="" /> -->
+        <span name="attr_syncId" style="min-width:30%; display: flex">
+        <input type="text" name="attr_name" value="" style="min-width:30%; display: flex">
+        <input type="number" name="attr_count" min="0" max="10" value="" style="min-width:30%; display: flex">
     </fieldset>
 
 
