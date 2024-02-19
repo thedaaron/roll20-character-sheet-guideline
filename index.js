@@ -30,12 +30,14 @@ const repeatingSections = {
     first: {
         name: 'repeating_first',
         attrs: {
-            syncId: '',
+            sourceId: '',
+            targetId: '',
             name: '',
             count: 0
         },
         getValues: (id, values) => ({
-            syncId: values[`${repeatingSections.first.name}_${id}_syncId`],
+            sourceId: values[`${repeatingSections.first.name}_${id}_sourceId`],
+            targetId: values[`${repeatingSections.first.name}_${id}_targetId`],
             name: values[`${repeatingSections.first.name}_${id}_name`],
             count: values[`${repeatingSections.first.name}_${id}_count`],
         }),
@@ -44,12 +46,14 @@ const repeatingSections = {
     second: {
         name: 'repeating_first',
         attrs: {
-            syncId: '',
+            sourceId: '',
+            targetId: '',
             name: '',
             count: 0
         },
         getValues: (id, values) => ({
-            syncId: values[`${repeatingSections.second.name}_${id}_syncId`],
+            sourceId: values[`${repeatingSections.second.name}_${id}_sourceId`],
+            targetId: values[`${repeatingSections.second.name}_${id}_targetId`],
             name: values[`${repeatingSections.second.name}_${id}_name`],
             count: values[`${repeatingSections.second.name}_${id}_count`],
         }),
@@ -104,40 +108,84 @@ on('change:repeating_first', (eventinfo) => {
     console.log('change:repeating_first', eventinfo);
     const { id } = parseEvent(eventinfo);
     getAttrs(repeatingSections.first.getAttrs(id), (values) => {
-        const value = repeatingSections.first.getValues(id, values);
-        console.log(value.syncId);
-
-        getSectionIDs('second', (idarray) => {
-           console.log(idarray);
-           const ids = [];
-           idarray.forEach( id => {
-               ids.push(`repeating_first_${id}_count`);
-               ids.push(`repeating_first_${id}_name`);
-               ids.push(`repeating_first_${id}_syncId`);
-               ids.push(`repeating_first_${id}_id`);
-           });
-
-           getAttrs(ids, values => {
-               console.log({values});
-           });
-
-        });
+        const data = repeatingSections.first.getValues(id, values);
+        console.log(data);
+        const sourceId = id;
+        let targetId = data.targetId;
+        let sourceSyncIds = {};
+        if (!targetId) {
+            targetId = generateRowID();
+            sourceSyncIds = {
+                [`repeating_first_${sourceId}_sourceId`]: sourceId,
+                [`repeating_first_${sourceId}_targetId`]: targetId
+            };
+        }
+        const syncId = {
+            ...sourceSyncIds,
+            [`repeating_second_${targetId}_sourceId`]: targetId,
+            [`repeating_second_${targetId}_targetId`]: sourceId
+        };
+        const syncData = {
+            [`repeating_second_${targetId}_count`]: data.count,
+            [`repeating_second_${targetId}_name`]: data.name
+        };
+        console.log(syncData);
+        setAttrs(
+            syncId,
+            { silent: true },
+            () => {
+                console.log('setAttrs', syncId);
+                setAttrs(
+                    syncData,
+                    { silent: false },
+                    () => {
+                        console.log('setAttrs', syncData);
+                    }
+                );
+            }
+        );
     })
 });
 
 on('change:repeating_second', (eventinfo) => {
     console.log('change:repeating_second', eventinfo);
-    getSectionIDs('first', (idarray) => {
-       console.log(idarray);
-       const ids = [];
-       idarray.forEach( id => {
-           ids.push(`repeating_second_${id}_count`);
-           ids.push(`repeating_second_${id}_name`);
-           ids.push(`repeating_second_${id}_syncId`);
-           ids.push(`repeating_second_${id}_id`);
-       });
-       getAttrs(ids, values => {
-           console.log({values});
-       })
-    });
+    const { id } = parseEvent(eventinfo);
+    getAttrs(repeatingSections.second.getAttrs(id), (values) => {
+        const data = repeatingSections.second.getValues(id, values);
+        console.log(data);
+        const sourceId = id;
+        let targetId = data.targetId;
+        let sourceSyncIds = {};
+        if (!targetId) {
+            targetId = generateRowID();
+            sourceSyncIds = {
+                [`repeating_second_${sourceId}_sourceId`]: sourceId,
+                [`repeating_second_${sourceId}_targetId`]: targetId
+            };
+        }
+        const syncId = {
+            ...sourceSyncIds,
+            [`repeating_first_${targetId}_sourceId`]: targetId,
+            [`repeating_first_${targetId}_targetId`]: sourceId
+        };
+        const syncData = {
+            [`repeating_first_${targetId}_count`]: data.count,
+            [`repeating_first_${targetId}_name`]: data.name
+        };
+        console.log(syncData);
+        setAttrs(
+            syncId,
+            { silent: true },
+            () => {
+                console.log('setAttrs', syncId);
+                setAttrs(
+                    syncData,
+                    { silent: false },
+                    () => {
+                        console.log('setAttrs', syncData);
+                    }
+                );
+            }
+        );
+    })
 });
