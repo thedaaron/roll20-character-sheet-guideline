@@ -17,6 +17,19 @@
     border: none;
 }
 
+.dh_h2 {
+    font-size: 1.0em;
+    letter-spacing: 0.6px;
+    color: purple;
+    font-weight: 600;
+    padding-left: 0px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-shadow: none;
+    border: none;
+}
+
 .dh_label {
     font-size: 1em;
     letter-spacing: 0.6px;

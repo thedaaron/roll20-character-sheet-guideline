@@ -13,14 +13,18 @@
     <textarea name="attr_emptyTextarea" class="dh_hidden"></textarea>
     <textarea name="attr_settedTextarea" class="dh_hidden">settedText</textarea>
 
-    
+    <input type="hidden" name="attr_totalCount" value="0" />
+
     <a href="https://wiki.roll20.net/Building_Character_Sheets#Default_Values">Documentation Here!</a>
-    <h1 class="dh_h1">Rules</h1>
+    <h1 class="dh_h1">Basic Rules</h1>
     <p>Each hidden input need to have specified default <b>value</b> attribute</p>
     <p>Each worker need to have getAttrs to get real value from attribute</p>
 
     <hr>
-    <h1 class="dh_h1">Text Inputs</h1>
+    <h1 class="dh_h1">Default Values</h1>
+
+    <hr>
+    <h2 class="dh_h2">Text Inputs</h2>
     <div class="dh_text_input">
         <div class="dh_label">Empty</div>
         <p><b>default</b> is <code>""</code></p>
@@ -57,7 +61,7 @@
     </div>
 
     <hr>
-    <h1 class="dh_h1">Number Inputs</h1>
+    <h2 class="dh_h2">Number Inputs</h2>
     <div class="dh_number_input">
         <div class="dh_label">Empty</div>
         <p><b>default</b> is <code>""</code></p>
@@ -92,9 +96,9 @@
             <span name="attr_settedNumberWorker"></span>
         </div>
     </div>
-    
+
     <hr>
-    <h1 class="dh_h1">Checkboxes</h1>
+    <h2 class="dh_h2">Checkboxes</h2>
     <div class="dh_checkbox">
         <div class="dh_label">Default False</div>
         <p><code>true === "1"</code> and <code>false === "0"</code>
@@ -117,7 +121,8 @@
         <p><code>true === "1"</code> and <code>false === "0"</code>
         <p><b>default</b> is <code>"1"</code></p>
         <p><b>first change</b> values <code>new === previous</code></p>
-            <input type="checkbox" name="attr_trueBoolean" value="1" checked/>
+        <div class="dh_input">
+            <input type="checkbox" name="attr_trueBoolean" value="1" checked />
         </div>
         <div class="dh_value">
             <span>Display Value: </span>
@@ -130,7 +135,7 @@
     </div>
 
     <hr>
-    <h1 class="dh_h1">Selects</h1>
+    <h2 class="dh_h2">>Selects</h2>
     <div class="dh_select">
         <div class="dh_label">Empty</div>
         <p><b>default</b> is <code>""</code></p>
@@ -145,7 +150,7 @@
                 <option value="Trpaslík">Trpaslík</option>
                 <option value="Půlčík">Půlčík</option>
                 <option value="Elf">Elf</option>
-              </select>
+            </select>
         </div>
         <div class="dh_value">
             <span>Display Value: </span>
@@ -170,7 +175,7 @@
                 <option value="Trpaslík">Trpaslík</option>
                 <option value="Půlčík">Půlčík</option>
                 <option value="Elf">Elf</option>
-              </select>
+            </select>
         </div>
         <div class="dh_value">
             <span>Display Value: </span>
@@ -183,15 +188,15 @@
     </div>
 
     <hr>
-    <h1 class="dh_h1">Radios</h1>
+    <h2 class="dh_h2">Radios</h2>
     <div class="dh_radio">
         <div class="dh_label">Not Selected Radio</div>
         <p><b>default</b> is <code>""</code></p>
         <p><b>first change</b> values <code>new === previous</code></p>
         <div class="dh_input">
-            <span>Základ: </span><input type="radio" value="0" name="attr_radioNotSelected" >
-            <span>Nevýhoda: </span><input type="radio" value="-5" name="attr_radioNotSelected" >
-            <span>Výhoda: </span><input type="radio" value="5" name="attr_radioNotSelected" >
+            <span>Základ: </span><input type="radio" value="0" name="attr_radioNotSelected">
+            <span>Nevýhoda: </span><input type="radio" value="-5" name="attr_radioNotSelected">
+            <span>Výhoda: </span><input type="radio" value="5" name="attr_radioNotSelected">
         </div>
         <div class="dh_value">
             <span>Display Value: </span>
@@ -207,8 +212,8 @@
         <p><b>default</b> is <code>"5"</code></p>
         <p><b>first change</b> values <code>new === previous</code></p>
         <div class="dh_input">
-            <span>Základ: </span><input type="radio" value="0" name="attr_radioSelected" >
-            <span>Nevýhoda: </span><input type="radio" value="-5" name="attr_radioSelected" >
+            <span>Základ: </span><input type="radio" value="0" name="attr_radioSelected">
+            <span>Nevýhoda: </span><input type="radio" value="-5" name="attr_radioSelected">
             <span>Výhoda: </span><input type="radio" value="5" name="attr_radioSelected" checked>
         </div>
         <div class="dh_value">
@@ -222,7 +227,7 @@
     </div>
 
     <hr>
-    <h1 class="dh_h1">Textareas</h1>
+    <h2 class="dh_h2">Textareas</h2>
     <div class="dh_textarea">
         <div class="dh_label">Empty</div>
         <p><b>default</b> is <code>""</code></p>
@@ -258,66 +263,48 @@
         </div>
     </div>
 
+    <hr>
+    <h1 class="dh_h1">Sync Repeating Sections</h1>
+
+    <hr>
+    <h2 class="dh_h2">Count based on repeating section</h2>
+    <span name="attr_totalCount"></span>
+
+    <hr>
+    <h2 class="dh_h2">Repeating First</h2>
+    <table>
+        <tr>
+            <td width="30%">syncId</td>
+            <td width="30%">name</td>
+            <td width="30%">count</td>
+        </tr>
+    </table>
+    <fieldset class="repeating_first">
+        <!-- <input type="hidden" name="attr_syncId" value="" /> -->
+        <span name="attr_syncId" style="min-width:30%; display: flex">
+        <input type="text" name="attr_name" value="" style="min-width:30%; display: flex">
+        <input type="number" name="attr_count" min="0" max="10" value="" style="min-width:30%; display: flex">
+    </fieldset>
+
+    <hr>
+    <h2 class="dh_h2">Repeating Second</h2>
+    <table>
+        <tr>
+            <td width="30%">syncId</td>
+            <td width="30%">name</td>
+            <td width="30%">count</td>
+        </tr>
+    </table>
+    <fieldset class="repeating_second">
+        <!-- <input type="hidden" name="attr_syncId" value="" /> -->
+        <span name="attr_syncId" style="min-width:30%; display: flex">
+        <input type="text" name="attr_name" value="" style="min-width:30%; display: flex">
+        <input type="number" name="attr_count" min="0" max="10" value="" style="min-width:30%; display: flex">
+    </fieldset>
 </div>
 
 <script type="text/worker">
 
-    const attributes = {
-        emptyText: "",
-        settedText: "settedText",
-        emptyNumber: "",
-        settedNumber: "6",
-        falseBoolean: "0",
-        trueBoolean: "1",
-        enumNotSelected: "",
-        enumSelected: "Člověk",
-        radioNotSelected: "",
-        radioSelected: "5",
-        emptyTextarea: "",
-        settedTextarea: "settedText",
-    };
-
-    on("sheet:opened", (eventinfo) => {
-        console.log('sheet opened', eventinfo);
-        
-        // Load sheet attributes
-        getAttrs(Object.keys(attributes), (values) => {
-            console.log('default values', { values });
-            
-            // Clone Default Attributes and write them
-            const data = JSON.parse(JSON.stringify(attributes));
-            setAttrs(
-                data,
-                { silent: false },
-                () => {
-                    console.log('setAttrs', data);
-                }
-            );
-        })
-    });
-
-    // Create event listeneres on default attributes changes
-    Object.keys(attributes).forEach( (attribute) => {
-        on(`change:${attribute}`, (eventinfo) => {
-            console.log(`change:${attribute}`, { 'new': eventinfo.newValue, 'previous': eventinfo.previousValue, ...eventinfo });
-            
-            // Load Real Value
-            getAttrs([`${attribute}`], (values) => {
-                console.log('getAttrs', { [attribute]: values[attribute] });
-                
-                // Write EventInfo newValue to diferrent attributen to display
-                const data = {
-                    [`${attribute}Worker`]: `${eventinfo.newValue}`
-                };
-                setAttrs(
-                    data,
-                    { silent: false },
-                    () => {
-                        console.log('setAttrs', data);
-                    }
-                );
-            });
-        });
-    });
+    .... copy here code from index.js
 
 </script>
