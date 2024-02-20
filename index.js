@@ -44,7 +44,7 @@ const repeatingSections = {
         getAttrs: (id) => Object.keys(repeatingSections.first.attrs).map( key => `${repeatingSections.first.name}_${id}_${key}`)
     },
     second: {
-        name: 'repeating_first',
+        name: 'repeating_second',
         attrs: {
             sourceId: '',
             targetId: '',
@@ -104,88 +104,137 @@ Object.keys(attributes).forEach( (attribute) => {
     });
 });
 
+const getSectionIDsOrdered = function (sectionName, callback) {
+    'use strict';
+    getAttrs([`_reporder_${sectionName}`], function (v) {
+      getSectionIDs(sectionName, function (idArray) {
+        let reporderArray = v[`_reporder_${sectionName}`] ? v[`_reporder_${sectionName}`].toLowerCase().split(',') : [],
+          ids = [...new Set(reporderArray.filter(x => idArray.includes(x)).concat(idArray))];
+        callback(ids);
+      });
+    });
+  };
+
 on('change:repeating_first', (eventinfo) => {
     console.log('change:repeating_first', eventinfo);
-    const { id } = parseEvent(eventinfo);
-    getAttrs(repeatingSections.first.getAttrs(id), (values) => {
-        const data = repeatingSections.first.getValues(id, values);
-        console.log(data);
-        const sourceId = id;
-        let targetId = data.targetId;
-        let sourceSyncIds = {};
-        if (!targetId) {
-            targetId = generateRowID();
-            sourceSyncIds = {
-                [`repeating_first_${sourceId}_sourceId`]: sourceId,
-                [`repeating_first_${sourceId}_targetId`]: targetId
-            };
-        }
-        const syncId = {
-            ...sourceSyncIds,
-            [`repeating_second_${targetId}_sourceId`]: targetId,
-            [`repeating_second_${targetId}_targetId`]: sourceId
+    const { id, changedAttribute, sectionName } = parseEvent(eventinfo);
+    if (changedAttribute === 'synced') {
+        const data = {
+            [`totalCount`]: 10
         };
-        const syncData = {
-            [`repeating_second_${targetId}_count`]: data.count,
-            [`repeating_second_${targetId}_name`]: data.name
-        };
-        console.log(syncData);
         setAttrs(
-            syncId,
-            { silent: true },
+            data,
+            { silent: false },
             () => {
-                console.log('setAttrs', syncId);
-                setAttrs(
-                    syncData,
-                    { silent: false },
-                    () => {
-                        console.log('setAttrs', syncData);
-                    }
-                );
+                console.log('setAttrs', data);
             }
         );
-    })
+    } else {
+        getAttrs(repeatingSections.first.getAttrs(id), (values) => {
+            getSectionIDsOrdered(repeatingSections.first.name, (ids) => {
+                console.log('ids', ids);
+            });
+            console.log({values});
+            const data = repeatingSections.first.getValues(id, values);
+            console.log({data});
+            const targetSectionName = 'repeating_second';
+            const sourceId = id;
+            let targetId = data.targetId;
+            let sourceSyncIds = {};
+            if (targetId === '') {
+                targetId = generateRowID();
+                sourceSyncIds = {
+                    [`${sectionName}_${sourceId}_sourceId`]: sourceId,
+                    [`${sectionName}_${sourceId}_targetId`]: targetId.toLowerCase(),
+                    [`${targetSectionName}_${targetId}_sourceId`]: targetId.toLowerCase(),
+                    [`${targetSectionName}_${targetId}_targetId`]: sourceId,
+                };
+            }
+            // sync everything silent
+            const syncData = {
+                ...sourceSyncIds,
+                [`${targetSectionName}_${targetId}_${changedAttribute}`]: data[changedAttribute]
+            };
+            // tell repeating second that it is synced, to recalculate computed values
+            const synced = {
+                [`${targetSectionName}_${targetId}_synced`]: '1'
+            }
+            setAttrs(
+                syncData,
+                { silent: true },
+                () => {
+                    console.log('setAttrs', syncData);
+                    setAttrs(
+                        synced,
+                        { silent: false },
+                        () => {
+                            console.log('setAttrs', synced);
+                        }
+                    );
+                }
+            );
+        })
+    }
 });
 
 on('change:repeating_second', (eventinfo) => {
     console.log('change:repeating_second', eventinfo);
-    const { id } = parseEvent(eventinfo);
-    getAttrs(repeatingSections.second.getAttrs(id), (values) => {
-        const data = repeatingSections.second.getValues(id, values);
-        console.log(data);
-        const sourceId = id;
-        let targetId = data.targetId;
-        let sourceSyncIds = {};
-        if (!targetId) {
-            targetId = generateRowID();
-            sourceSyncIds = {
-                [`repeating_second_${sourceId}_sourceId`]: sourceId,
-                [`repeating_second_${sourceId}_targetId`]: targetId
-            };
-        }
-        const syncId = {
-            ...sourceSyncIds,
-            [`repeating_first_${targetId}_sourceId`]: targetId,
-            [`repeating_first_${targetId}_targetId`]: sourceId
+    const { id, changedAttribute, sectionName } = parseEvent(eventinfo);
+    if (changedAttribute === 'synced') {
+        const data = {
+            [`totalCount`]: 10
         };
-        const syncData = {
-            [`repeating_first_${targetId}_count`]: data.count,
-            [`repeating_first_${targetId}_name`]: data.name
-        };
-        console.log(syncData);
         setAttrs(
-            syncId,
-            { silent: true },
+            data,
+            { silent: false },
             () => {
-                console.log('setAttrs', syncId);
-                setAttrs(
-                    syncData,
-                    { silent: false },
-                    () => {
-                        console.log('setAttrs', syncData);
-                    }
-                );
+                console.log('setAttrs', data);
             }
         );
-    })
+    } else {
+        getAttrs(repeatingSections.second.getAttrs(id), (values) => {
+            getSectionIDsOrdered(repeatingSections.second.name, (ids) => {
+                console.log('ids', ids);
+            });
+            console.log({values});
+            const data = repeatingSections.second.getValues(id, values);
+            console.log({data});
+            const targetSectionName = 'repeating_first';
+            const sourceId = id;
+            let targetId = data.targetId;
+            let sourceSyncIds = {};
+            if (targetId === '') {
+                targetId = generateRowID().toLowerCase();
+                sourceSyncIds = {
+                    [`${sectionName}_${sourceId}_sourceId`]: sourceId,
+                    [`${sectionName}_${sourceId}_targetId`]: targetId.toLowerCase(),
+                    [`${targetSectionName}_${targetId}_sourceId`]: targetId.toLowerCase(),
+                    [`${targetSectionName}_${targetId}_targetId`]: sourceId,
+                };
+            }
+            // sync everything silent
+            const syncData = {
+                ...sourceSyncIds,
+                [`${targetSectionName}_${targetId}_${changedAttribute}`]: data[changedAttribute]
+            };
+            // tell repeating second that it is synced, to recalculate computed values
+            const synced = {
+                [`${targetSectionName}_${targetId}_synced`]: '1'
+            }
+            setAttrs(
+                syncData,
+                { silent: true },
+                () => {
+                    console.log('setAttrs', syncData);
+                    setAttrs(
+                        synced,
+                        { silent: false },
+                        () => {
+                            console.log('setAttrs', synced);
+                        }
+                    );
+                }
+            );
+        });
+    }
 });
