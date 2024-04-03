@@ -1,8 +1,8 @@
 const parseEvent = ({ sourceAttribute, newValue, previousValue, removedInfo }) => {
-    const [section, id, attribute] = sourceAttribute.split('_');
+    const [section, name, id, attribute] = sourceAttribute.split('_');
     return {
         id,
-        sectionName: `${section}_${id}`,
+        sectionName: `${section}_${name}`,
         changedAttribute: attribute,
         newValue,
         previousValue,
@@ -26,27 +26,30 @@ const attributes = {
     totalCount: "0"
 };
 
-const createRepeatingSection = (name) => ({
-    name,
-    attrs: {
+const createRepeatingSection = (name) => {
+    const attrs = {
         sourceId: '',
         targetId: '',
         name: '',
         count: 0
-    },
-    getValues: (id, values) => {
-        const prefix = `${name}_${id}_`;
-        return Object.keys(this.attrs).reduce((acc, key) => {
-            acc[key] = values[prefix + key];
-            return acc;
-        }, {});
-    },
-    getAttrs: (id) => Object.keys(this.attrs).map(key => `${name}_${id}_${key}`)
-});
+    };
+    return {
+        name,
+        attrs,
+        getValues: (id, values) => {
+            const prefix = `repeating_${name}_${id}_`;
+            return Object.keys(attrs).reduce((acc, key) => {
+                acc[key] = values[prefix + key];
+                return acc;
+            }, {});
+        },
+        getAttrs: (id) => Object.keys(attrs).map(key => `repeating_${name}_${id}_${key}`)
+    };
+};
 
 const repeatingSections = {
-    first: createRepeatingSection('repeating_first'),
-    second: createRepeatingSection('repeating_second')
+    first: createRepeatingSection('first'),
+    second: createRepeatingSection('second')
 };
 
 on("sheet:opened", () => {
@@ -72,63 +75,67 @@ const getSectionIDsOrdered = (sectionName, callback) => {
 };
 
 const syncTotalCount = (totalCount) => {
-    setAttrs(
-        { totalCount },
-        { silent: false },
-        () => {
-            console.log('setAttrs', data);
-        }
-    );
+    setAttrs({ totalCount }, { silent: false }, () => {
+        console.log('setAttrs totalCount', totalCount);
+    });
 };
 
 const handleRepeatingChange = (sectionName, targetSectionName, eventinfo) => {
     const { id, changedAttribute, newValue } = parseEvent(eventinfo);
+    console.log(id, changedAttribute, newValue, eventinfo)
     if (changedAttribute === 'synced') {
         syncTotalCount(10);
     } else {
         getAttrs(repeatingSections[sectionName].getAttrs(id), (values) => {
-            console.log({values});
+            console.log({ values });
             const data = repeatingSections[sectionName].getValues(id, values);
+            // getSectionIDsOrdered(repeatingSections[sectionName].name, (ids) => {
+            //     console.log('ids', ids);
+            // });
             console.log({data});
-            // Process data...
-            getSectionIDsOrdered(repeatingSections[sectionName].name, (ids) => {
-                console.log('ids', ids);
-            });
-            let sourceSyncIds = {};
-            if (targetId === '') {
+            let targetId = data.targetId;
+            let syncData = {};
+            if (!targetId) {
                 targetId = generateRowID();
-                sourceSyncIds = {
-                    [`${sectionName}_${sourceId}_sourceId`]: sourceId,
-                    [`${sectionName}_${sourceId}_targetId`]: targetId.toLowerCase(),
-                    [`${targetSectionName}_${targetId}_sourceId`]: targetId.toLowerCase(),
-                    [`${targetSectionName}_${targetId}_targetId`]: sourceId,
+                data.targetId = targetId; // Update data with new targetId
+                syncData = {
+                    [`repeating_${sectionName}_${id}_sourceId`]: id,
+                    [`repeating_${sectionName}_${id}_targetId`]: targetId,
+                    [`repeating_${targetSectionName}_${targetId}_sourceId`]: targetId,
+                    [`repeating_${targetSectionName}_${targetId}_targetId`]: id,
+                    [`repeating_${targetSectionName}_${targetId}_${changedAttribute}`]: newValue
                 };
-            }
-            // sync everything silent
-            const syncData = {
-                ...sourceSyncIds,
-                [`${targetSectionName}_${targetId}_${changedAttribute}`]: data[changedAttribute]
-            };
-            // tell repeating second that it is synced, to recalculate computed values
-            const synced = {
-                [`${targetSectionName}_${targetId}_synced`]: '1'
-            }
-            setAttrs(
-                syncData,
-                { silent: true },
+                setAttrs(syncData, { silent: true }, 
                 () => {
-                    window.setTimeout(() => {
-                        console.log('setAttrs', syncData);
-                        setAttrs(
-                            synced,
-                            { silent: false },
-                            () => {
-                                console.log('setAttrs', synced);
-                            }
-                        );
-                    }, 2000);
+                    // window.setTimeout(() => {
+                    //     console.log('setAttrs', syncData);
+                    //     setAttrs(
+                    //         { [`repeating_${targetSectionName}_${targetId}_synced`]: '1' }, 
+                    //         { silent: false }, 
+                    //         () => {
+                    //             console.log('setAttrs', synced);
+                    //         }
+                    //     );
+                    // }, 2000);
                 }
-            );
+                );
+            } else {
+                setAttrs(
+                    {[`repeating_${targetSectionName}_${targetId}_${changedAttribute}`]: newValue},
+                    { silent: true }, () => {
+                        // window.setTimeout(() => {
+                        //     console.log('setAttrs', syncData);
+                        //     setAttrs(
+                        //         { [`repeating_${targetSectionName}_${targetId}_synced`]: '1' }, 
+                        //         { silent: false }, 
+                        //         () => {
+                        //             console.log('setAttrs', synced);
+                        //         }
+                        //     );
+                        // }, 2000);
+                    }
+                );
+            }
         });
     }
 };
