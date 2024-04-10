@@ -14,6 +14,7 @@
     <textarea name="attr_settedTextarea" class="dh_hidden">settedText</textarea>
 
     <input type="hidden" name="attr_totalCount" value="0" />
+    <input type="hidden" name="attr_avarage" value="0" />
 
     <a href="https://wiki.roll20.net/Building_Character_Sheets#Default_Values">Documentation Here!</a>
     <h1 class="dh_h1">Basic Rules</h1>
@@ -267,12 +268,15 @@
     <h1 class="dh_h1">Sync Repeating Sections</h1>
 
     <hr>
-    <h2 class="dh_h2">Count based on repeating section</h2>
+    <h2 class="dh_h2">SUM based on repeating count</h2>
     <span name="attr_totalCount"></span>
+
+    <h2 class="dh_h2">Calculated Avarage = SUM / Items count</h2>
+    <span name="attr_avarage"></span>
 
     <hr>
     <h2 class="dh_h2">Repeating First</h2>
-    <table>
+    <table style="width:100%">
         <tr>
             <td width="25%">name</td>
             <td width="25%">count</td>
@@ -289,7 +293,7 @@
 
     <hr>
     <h2 class="dh_h2">Repeating Second</h2>
-    <table>
+    <table style="width:100%">
         <tr>
             <td width="25%">name</td>
             <td width="25%">count</td>

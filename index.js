@@ -22,8 +22,7 @@ const attributes = {
     radioNotSelected: "",
     radioSelected: "5",
     emptyTextarea: "",
-    settedTextarea: "settedText",
-    totalCount: "0"
+    settedTextarea: "settedText"
 };
 
 const createRepeatingSection = (name) => {
@@ -43,7 +42,9 @@ const createRepeatingSection = (name) => {
                 return acc;
             }, {});
         },
-        getAttrs: (id) => Object.keys(attrs).map(key => `repeating_${name}_${id}_${key}`)
+        getAttrs: (ids) => {
+            return ids.flatMap(id => Object.keys(attrs).map(key => `repeating_${name}_${id}_${key}`));
+        }
     };
 };
 
@@ -74,71 +75,79 @@ const getSectionIDsOrdered = (sectionName, callback) => {
     });
 };
 
-const syncTotalCount = (totalCount) => {
-    setAttrs({ totalCount }, { silent: false }, () => {
-        console.log('setAttrs totalCount', totalCount);
+const syncTotalCount = (sectionName, targetSectionName) => {
+    getSectionIDsOrdered(targetSectionName, (idarray) => {
+        getAttrs(repeatingSections[targetSectionName].getAttrs(idarray), (values) => {
+            let total = 0;
+            let itemsCount = idarray.length;
+            for (let id of idarray) {
+                total += Number(values[`repeating_${targetSectionName}_${id}_count`]) ?? 0;
+            }
+            setAttrs(
+                { totalCount: total },
+                { silent: true },
+                () => {
+                    syncAvarage(itemsCount);
+                }
+            );
+        });
+    });
+};
+
+const syncAvarage = (itemsCount) => {
+    getAttrs(['totalCount'], (values) => {
+        const totalCount = Number(values.totalCount);
+        console.log(totalCount, itemsCount)
+        const avarage = itemsCount === 0 ? 0 : totalCount / itemsCount;
+        setAttrs({ avarage }, { silent: true });
     });
 };
 
 const handleRepeatingChange = (sectionName, targetSectionName, eventinfo) => {
     const { id, changedAttribute, newValue } = parseEvent(eventinfo);
-    console.log(id, changedAttribute, newValue, eventinfo)
-    if (changedAttribute === 'synced') {
-        syncTotalCount(10);
-    } else {
-        getAttrs(repeatingSections[sectionName].getAttrs(id), (values) => {
-            console.log({ values });
-            const data = repeatingSections[sectionName].getValues(id, values);
-            // getSectionIDsOrdered(repeatingSections[sectionName].name, (ids) => {
-            //     console.log('ids', ids);
-            // });
-            console.log({data});
-            let targetId = data.targetId;
-            let syncData = {};
-            if (!targetId) {
-                targetId = generateRowID();
-                data.targetId = targetId; // Update data with new targetId
-                syncData = {
-                    [`repeating_${sectionName}_${id}_sourceId`]: id,
-                    [`repeating_${sectionName}_${id}_targetId`]: targetId,
-                    [`repeating_${targetSectionName}_${targetId}_sourceId`]: targetId,
-                    [`repeating_${targetSectionName}_${targetId}_targetId`]: id,
-                    [`repeating_${targetSectionName}_${targetId}_${changedAttribute}`]: newValue
-                };
-                setAttrs(syncData, { silent: true }, 
+    getAttrs(repeatingSections[sectionName].getAttrs([id]), (values) => {
+        const data = repeatingSections[sectionName].getValues(id, values);
+        const value = data[changedAttribute]
+        let targetId = data.targetId;
+        let syncData = {};
+        if (!targetId) {
+            targetId = generateRowID();
+            data.targetId = targetId; // Update data with new targetId
+            syncData = {
+                [`repeating_${sectionName}_${id}_sourceId`]: id,
+                [`repeating_${sectionName}_${id}_targetId`]: targetId,
+                [`repeating_${targetSectionName}_${targetId}_sourceId`]: targetId,
+                [`repeating_${targetSectionName}_${targetId}_targetId`]: id,
+                [`repeating_${targetSectionName}_${targetId}_${changedAttribute}`]: value
+            };
+            setAttrs(syncData,
+                { silent: true },
                 () => {
-                    // window.setTimeout(() => {
-                    //     console.log('setAttrs', syncData);
-                    //     setAttrs(
-                    //         { [`repeating_${targetSectionName}_${targetId}_synced`]: '1' }, 
-                    //         { silent: false }, 
-                    //         () => {
-                    //             console.log('setAttrs', synced);
-                    //         }
-                    //     );
-                    // }, 2000);
+                    syncTotalCount(sectionName, targetSectionName);
                 }
-                );
-            } else {
-                setAttrs(
-                    {[`repeating_${targetSectionName}_${targetId}_${changedAttribute}`]: newValue},
-                    { silent: true }, () => {
-                        // window.setTimeout(() => {
-                        //     console.log('setAttrs', syncData);
-                        //     setAttrs(
-                        //         { [`repeating_${targetSectionName}_${targetId}_synced`]: '1' }, 
-                        //         { silent: false }, 
-                        //         () => {
-                        //             console.log('setAttrs', synced);
-                        //         }
-                        //     );
-                        // }, 2000);
-                    }
-                );
-            }
-        });
-    }
+            );
+        } else {
+            setAttrs(
+                { [`repeating_${targetSectionName}_${targetId}_${changedAttribute}`]: value },
+                { silent: true },
+                () => {
+                    syncTotalCount(sectionName, targetSectionName);
+                }
+            );
+        }
+    });
+};
+
+const handleRepeatingRemove = (sectionName, targetSectionName, eventinfo) => {
+    const { sourceAttribute, removedInfo } = eventinfo;
+    const targetId = removedInfo[`${sourceAttribute}_targetId`];
+    removeRepeatingRow(`repeating_${targetSectionName}_${targetId}`);
+    syncTotalCount(sectionName, targetSectionName);
 };
 
 on('change:repeating_first', (eventinfo) => handleRepeatingChange('first', 'second', eventinfo));
+on('remove:repeating_first', (eventinfo) => handleRepeatingRemove('first', 'second', eventinfo));
+
+
 on('change:repeating_second', (eventinfo) => handleRepeatingChange('second', 'first', eventinfo));
+on('remove:repeating_second', (eventinfo) => handleRepeatingRemove('second', 'first', eventinfo));
